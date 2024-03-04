@@ -1,0 +1,159 @@
+class Book:
+    def __init__(self, title, author, ISBN, quantity):
+        self.title = title
+        self.author = author
+        self.ISBN = ISBN
+        self.quantity = quantity
+
+    def add_book(self,book):
+        pass
+
+    def update_book(self, new_title, new_author, new_ISBN, new_quantity):
+        self.title = new_title
+        self.author = new_author
+        self.ISBN = new_ISBN
+        self.quantity = new_quantity
+
+    def remove_book(self):
+        pass
+
+    def display_book(self):
+        print("Title:", self.title)
+        print("Author:", self.author)
+        print("ISBN:", self.ISBN)
+        print("Quantity:", self.quantity)
+
+class Patron:
+    def __init__(self, name, ID, contact_inf):
+        self.name = name
+        self.ID = ID
+        self.contact_inf = contact_inf
+
+    def add_patron(self):
+        pass
+
+    def update_patron(self, new_name, new_ID, new_contact_inf):
+        self.name = new_name
+        self.ID = new_ID
+        self.contact_inf = new_contact_inf
+
+    def remove_patron(self):
+        pass
+
+    def display_patron(self):
+        print("Name:", self.name)
+        print("ID:", self.ID)
+        print("Contact Information:", self.contact_inf)
+
+import datetime
+class Transaction:
+    def __init__(self, book, patron, check_out, due, returned = None, fine = 0):
+        self.book = book
+        self.patron = patron
+        self.check_out = check_out
+        self.due = due
+        self.returned = returned
+        self.fine = fine
+
+    def check_in(self):
+        self.book.quantity += 1
+        self.patron.books_checked_out.remove(self.book)
+        self.returned = datetime.date.today()
+
+    def check_out(self):
+        self.book.quantity -= 1
+        self.patron.books_checked_out.append(self.book)
+
+    def fine(self):
+        if self.returned > self.due:
+            days_overdue = (self.returned - self.due).days
+            self.fine = days_overdue * 0.5
+
+class Library:
+    def __init__(self):
+        self.books = []
+        self.patrons = []
+        self.transactions = []
+
+    def add_book(self, book):
+        self.books.append(book)
+
+    def add_patron(self, patron):
+        self.patrons.append(patron)
+
+    def add_transaction(self, transaction):
+        self.transactions.append(transaction)
+
+    def searching_books(self, title,author, ISBN):
+        results = []
+        for book in self.books:
+            if title and title in book.title:
+                results.append(book)
+            if author and author in book.author:
+                results.append(book)
+            if ISBN and ISBN == book.ISBN:
+                results.append(book)
+        return results
+
+    def managing_patrons(self, ID):
+        for patron in self.patrons:
+            if patron.ID == ID:
+                return patron
+        return None
+
+    def get_book(self, ISBN):
+        for book in self.books:
+            if book.ISBN == ISBN:
+                return book
+        return None
+
+    def checkout_book(self, book, patron):
+        transaction = Transaction(book, patron, datetime.date.today(), datetime.date.today() + datetime.timedelta(days=14))
+        self.add_transaction(transaction)
+
+    def checkin_book(self, book, patron):
+        for transaction in self.transactions:
+            if transaction.book == book and transaction.patron == patron and not transaction.returned_date:
+                transaction.check_in()
+
+    def generate_reports(self):
+        pass
+
+import csv
+book_file = "books.csv"
+patron_file = "patrons.csv"
+
+def save_books(books):
+    with open(book_file, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Title", "Author", "ISBN", "Quantity"])
+        for book in books:
+            writer.writerow([book.title, book.author, book.ISBN, book.quantity])
+
+def load_books():
+    books = []
+    with open(book_file, "r") as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            book = Book(row[0], row[1], row[2], int(row[3]))
+            books. append(book)
+    return books
+
+def save_patrons(patrons):
+    with open (patron_file, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Name", "ID", "Contact Information"])
+        for patron in patrons:
+            writer.writerow([patron.name, patron.ID, patron.contact_inf])
+
+def load_patrons():
+    patrons = []
+    with open(patron_file, "r") as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            patron = Patron(row[0], row[1], row[2])
+            patrons. append(patron)
+    return patrons
+
