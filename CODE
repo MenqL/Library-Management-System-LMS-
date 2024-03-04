@@ -1,3 +1,6 @@
+# Create a Book class to represent each book with attributes like title, author, ISBN, quantity, etc.
+# Implement methods for adding, updating, and removing books.
+# Include a method to display book details.
 class Book:
     def __init__(self, title, author, ISBN, quantity):
         self.title = title
@@ -5,47 +8,60 @@ class Book:
         self.ISBN = ISBN
         self.quantity = quantity
 
+# Add the book to data structure
     def add_book(self,book):
         pass
 
+# Update the book details in data structure
     def update_book(self, new_title, new_author, new_ISBN, new_quantity):
         self.title = new_title
         self.author = new_author
         self.ISBN = new_ISBN
         self.quantity = new_quantity
 
+# Remove the book from data structure
     def remove_book(self):
         pass
 
+# Display the book details
     def display_book(self):
         print("Title:", self.title)
         print("Author:", self.author)
         print("ISBN:", self.ISBN)
         print("Quantity:", self.quantity)
 
+# Develop a Patron class to represent library patrons with attributes like name, ID, contact information, etc.
+# Implement methods for adding, updating, and removing patrons.
+# Include a method to display patron details.
 class Patron:
     def __init__(self, name, ID, contact_inf):
         self.name = name
         self.ID = ID
         self.contact_inf = contact_inf
 
+# Add the patron to data structure
     def add_patron(self):
         pass
 
+# Update the patron details in the database or data structure
     def update_patron(self, new_name, new_ID, new_contact_inf):
         self.name = new_name
         self.ID = new_ID
         self.contact_inf = new_contact_inf
 
+# Remove the patron from data structure
     def remove_patron(self):
         pass
 
+# Display the patron details
     def display_patron(self):
         print("Name:", self.name)
         print("ID:", self.ID)
         print("Contact Information:", self.contact_inf)
 
 import datetime
+# Create a Transaction class to handle book checkouts and returns.
+# Implement methods for checking in/out books, recording due dates, and managing fines (if applicable).
 class Transaction:
     def __init__(self, book, patron, check_out, due, returned = None, fine = 0):
         self.book = book
@@ -55,20 +71,26 @@ class Transaction:
         self.returned = returned
         self.fine = fine
 
+# Update book and patron records to reflect checkin
     def check_in(self):
         self.book.quantity += 1
         self.patron.books_checked_out.remove(self.book)
         self.returned = datetime.date.today()
 
+# Update book and patron records to reflect checkout
     def check_out(self):
         self.book.quantity -= 1
         self.patron.books_checked_out.append(self.book)
 
+# Calculate fine based on the number of days overdue (if applicable)
     def fine(self):
         if self.returned > self.due:
             days_overdue = (self.returned - self.due).days
-            self.fine = days_overdue * 0.5
+            self.fine = days_overdue * 0.2
+            # 0.2 per day overdue
 
+# Design a Library class to manage the overall library system.
+# Include methods for searching books, managing patrons, handling transactions, and generating reports.
 class Library:
     def __init__(self):
         self.books = []
@@ -84,6 +106,7 @@ class Library:
     def add_transaction(self, transaction):
         self.transactions.append(transaction)
 
+# Search for books based on title, author, or ISBN
     def searching_books(self, title,author, ISBN):
         results = []
         for book in self.books:
@@ -94,42 +117,49 @@ class Library:
             if ISBN and ISBN == book.ISBN:
                 results.append(book)
         return results
-
+# Find a patron by their ID
     def managing_patrons(self, ID):
         for patron in self.patrons:
             if patron.ID == ID:
                 return patron
         return None
 
+# Find a book by its ISBN
     def get_book(self, ISBN):
         for book in self.books:
             if book.ISBN == ISBN:
                 return book
         return None
 
+# Create a new transaction to record the checkout
     def checkout_book(self, book, patron):
         transaction = Transaction(book, patron, datetime.date.today(), datetime.date.today() + datetime.timedelta(days=14))
         self.add_transaction(transaction)
 
+# Find the transaction for the checked-out book
     def checkin_book(self, book, patron):
         for transaction in self.transactions:
             if transaction.book == book and transaction.patron == patron and not transaction.returned_date:
                 transaction.check_in()
 
+# Generate reports on books, patrons, and transactions
     def generate_reports(self):
         pass
 
+# Implement data storage using a file-based system (e.g., CSV or JSON) to persistently store book and patron information. (Specific database is not mandatory, you can use a file system to manage the data)
 import csv
+# Define the file paths for books and patrons
 book_file = "books.csv"
 patron_file = "patrons.csv"
 
+# Save books to a CSV file
 def save_books(books):
     with open(book_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Title", "Author", "ISBN", "Quantity"])
         for book in books:
             writer.writerow([book.title, book.author, book.ISBN, book.quantity])
-
+# Load books from a CSV file
 def load_books():
     books = []
     with open(book_file, "r") as csvfile:
@@ -140,6 +170,7 @@ def load_books():
             books. append(book)
     return books
 
+# Save patrons to a CSV file
 def save_patrons(patrons):
     with open (patron_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
@@ -147,6 +178,7 @@ def save_patrons(patrons):
         for patron in patrons:
             writer.writerow([patron.name, patron.ID, patron.contact_inf])
 
+# Load patrons from a CSV file
 def load_patrons():
     patrons = []
     with open(patron_file, "r") as csvfile:
@@ -157,3 +189,80 @@ def load_patrons():
             patrons. append(patron)
     return patrons
 
+class User:
+    def __init__(self, username, role):
+        self.username = username
+        self.role = role
+
+# Implement role-based access control for librarians and administrators.
+class Role:
+    Librarian = "librarian"
+    Administrator = "administrator"
+
+# Develop a simple command-line interface (CLI) or a basic graphical user interface (GUI) to interact with the LMS.
+class LMS:
+    def __init__(self):
+        self.books_file = 'books.csv'
+        self.patron_file = 'patron.csv'
+        self.current_user = None
+
+    def login(self):
+        username = input("Enter your username:")
+        role = input("Enter your role (librarian or administrator) :")
+        self.current_user = User(username, role)
+        print("Welcome, {self.current_user.username} ! Logged in as a {self.current_user.role}.")
+
+
+def main():
+    lms = LMS()
+    while True:
+        if not lms.current_user:
+            lms.login()
+
+        if lms.current_user:
+            A = '''\n ====== Welcome to Library ======
+                    please choose an option:
+                    1. Add Book
+                    2. Add Patron
+                    3. Display Book
+                    4. Display Patron
+                    5. Exit the Library
+                    '''
+            print(A)
+            a = input("Enter a choice:")
+            if a == "1":
+                if lms.current_user.role == "librarian":
+                    book_ISBN = input("Enter book ISBN:")
+                    title = input("Enter book title:")
+                    author = input("Enter author:")
+                    quantity = input("Enter quantity")
+                    lms.add_book([book_ISBN, title, author, quantity])
+                    print("Book added successfully!!!")
+                else:
+                    print("You don't have permission to add books:)")
+
+            elif a == "2":
+                if lms.current_user.role == "librarian":
+                    patron_ID = input("Enter patron ID:")
+                    name = input("Enter patron name:")
+                    lms.add_patron([patron_ID, name])
+                    print("Patron added successfully!!!")
+                else:
+                    print("You don't have permission to add patron:)")
+
+            elif a == "3":
+                print("Book:")
+                lms.display_book()
+
+            elif a == "4":
+                print("Patron:")
+                lms.display_patron()
+
+            elif a == "5":
+                lms.current_user = None
+                print("Thanks for choosing Library!")
+            else:
+                print("Invalid Choice")
+
+if __name__ == "__main__":
+    main()
