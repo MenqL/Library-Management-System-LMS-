@@ -200,7 +200,7 @@ class Role:
     Administrator = "administrator"
 
 # Develop a simple command-line interface (CLI) or a basic graphical user interface (GUI) to interact with the LMS.
-class LMS:
+class LMS(Book, Patron, Transaction, Library):
     def __init__(self):
         self.books_file = 'books.csv'
         self.patron_file = 'patron.csv'
