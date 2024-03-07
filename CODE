@@ -261,6 +261,7 @@ def main():
             elif a == "5":
                 lms.current_user = None
                 print("Thanks for choosing Library!")
+                return
             else:
                 print("Invalid Choice")
 
